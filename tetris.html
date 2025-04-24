@@ -142,6 +142,7 @@
         if (board[r].every(cell => cell !== null)) {
           board.splice(r, 1);
           board.unshift(Array(COLUMNS).fill(null));
+          r++; // recheck the row that moved down
         }
       }
     }
@@ -201,4 +202,3 @@
   </script>
 </body>
 </html>
-

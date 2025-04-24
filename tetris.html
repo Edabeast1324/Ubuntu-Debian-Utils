@@ -1,58 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetris</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tetris with Restart</title>
   <style>
     body {
+      margin: 0;
+      background: #111;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      flex-direction: column;
     }
     canvas {
       border: 2px solid white;
+      background: black;
+    }
+    #overlay {
+      position: absolute;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <canvas id="tetris" width="300" height="600"></canvas>
+  <div id="overlay">
+    <p>🎮 Game Over</p>
+    <p>Press <strong>R</strong> to Restart</p>
+  </div>
+
   <script>
     const canvas = document.getElementById('tetris');
     const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
 
     const ROWS = 20;
     const COLUMNS = 10;
     const BLOCK_SIZE = 30;
 
-    // Define shapes and their rotations
     const TETROMINOS = [
-      { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' }, // T
-      { shape: [[1, 1], [1, 1]], color: 'yellow' },     // O
-      { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' }, // S
-      { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' },   // Z
-      { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },  // L
-      { shape: [[0, 0, 1], [1, 1, 1]], color: 'orange' },// J
-      { shape: [[1, 1, 1, 1]], color: 'purple' }         // I
+      { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' },    // T
+      { shape: [[1, 1], [1, 1]], color: 'yellow' },        // O
+      { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' },   // S
+      { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' },     // Z
+      { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },    // L
+      { shape: [[0, 0, 1], [1, 1, 1]], color: 'orange' },  // J
+      { shape: [[1, 1, 1, 1]], color: 'purple' }           // I
     ];
 
-    let board = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
-    let currentTetromino = generateTetromino();
-    let tetrominoPos = { row: 0, col: 3 };  // Starting position
-    let gameOver = false;
+    let board, currentTetromino, tetrominoPos, gameOver;
+
+    function initializeGame() {
+      board = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
+      currentTetromino = generateTetromino();
+      tetrominoPos = { row: 0, col: 3 };
+      gameOver = false;
+      overlay.style.display = 'none';
+      draw();
+    }
 
     function generateTetromino() {
       const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-      return TETROMINOS[randomIndex];
+      return JSON.parse(JSON.stringify(TETROMINOS[randomIndex])); // Deep copy
     }
 
     function drawBoard() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw the board
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLUMNS; c++) {
           if (board[r][c]) {
@@ -84,7 +104,10 @@
           if (shape[r][c]) {
             const newRow = tetrominoPos.row + r + deltaRow;
             const newCol = tetrominoPos.col + c + deltaCol;
-            if (newRow >= ROWS || newCol < 0 || newCol >= COLUMNS || (board[newRow] && board[newRow][newCol])) {
+            if (
+              newRow >= ROWS || newCol < 0 || newCol >= COLUMNS ||
+              (newRow >= 0 && board[newRow] && board[newRow][newCol])
+            ) {
               return false;
             }
           }
@@ -94,12 +117,11 @@
     }
 
     function rotateTetromino() {
-      const rotatedShape = currentTetromino.shape[0].map((_, index) => currentTetromino.shape.map(row => row[index])).reverse();
-      const originalShape = currentTetromino.shape;
-      currentTetromino.shape = rotatedShape;
-      if (!canMove(0, 0)) {
-        currentTetromino.shape = originalShape; // Revert rotation if invalid
-      }
+      const shape = currentTetromino.shape;
+      const rotated = shape[0].map((_, i) => shape.map(row => row[i])).reverse();
+      const original = currentTetromino.shape;
+      currentTetromino.shape = rotated;
+      if (!canMove(0, 0)) currentTetromino.shape = original;
     }
 
     function placeTetromino() {
@@ -107,13 +129,15 @@
       for (let r = 0; r < shape.length; r++) {
         for (let c = 0; c < shape[r].length; c++) {
           if (shape[r][c]) {
-            board[tetrominoPos.row + r][tetrominoPos.col + c] = color;
+            const row = tetrominoPos.row + r;
+            const col = tetrominoPos.col + c;
+            if (row >= 0) board[row][col] = color;
           }
         }
       }
     }
 
-    function clearFullRows() {
+    function clearRows() {
       for (let r = ROWS - 1; r >= 0; r--) {
         if (board[r].every(cell => cell !== null)) {
           board.splice(r, 1);
@@ -129,25 +153,32 @@
         tetrominoPos.row++;
       } else {
         placeTetromino();
-        clearFullRows();
+        clearRows();
         currentTetromino = generateTetromino();
         tetrominoPos = { row: 0, col: 3 };
-
-        // Check for game over
         if (!canMove(0, 0)) {
           gameOver = true;
-          alert("Game Over!");
+          overlay.style.display = 'block';
         }
       }
 
+      draw();
+    }
+
+    function draw() {
       drawBoard();
       drawTetromino();
     }
 
-    function moveTetromino(event) {
+    function handleKey(e) {
+      if (gameOver && e.key.toLowerCase() === 'r') {
+        initializeGame();
+        return;
+      }
+
       if (gameOver) return;
 
-      switch (event.key) {
+      switch (e.key) {
         case 'ArrowLeft':
           if (canMove(0, -1)) tetrominoPos.col--;
           break;
@@ -161,14 +192,13 @@
           rotateTetromino();
           break;
       }
-      drawBoard();
-      drawTetromino();
+      draw();
     }
 
-    document.addEventListener('keydown', moveTetromino);
-
-    setInterval(update, 500); // Update the game every 500ms
-
+    document.addEventListener('keydown', handleKey);
+    setInterval(update, 500);
+    initializeGame();
   </script>
 </body>
 </html>
+

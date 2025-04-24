@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tetris with Restart</title>
+  <title>Tetris</title>
   <style>
     body {
       margin: 0;
@@ -46,13 +46,13 @@
     const BLOCK_SIZE = 30;
 
     const TETROMINOS = [
-      { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' },    // T
-      { shape: [[1, 1], [1, 1]], color: 'yellow' },        // O
-      { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' },   // S
-      { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' },     // Z
-      { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },    // L
-      { shape: [[0, 0, 1], [1, 1, 1]], color: 'orange' },  // J
-      { shape: [[1, 1, 1, 1]], color: 'purple' }           // I
+      { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' },
+      { shape: [[1, 1], [1, 1]], color: 'yellow' },
+      { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' },
+      { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' },
+      { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },
+      { shape: [[0, 0, 1], [1, 1, 1]], color: 'orange' },
+      { shape: [[1, 1, 1, 1]], color: 'purple' }
     ];
 
     let board, currentTetromino, tetrominoPos, gameOver;
@@ -68,7 +68,7 @@
 
     function generateTetromino() {
       const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-      return JSON.parse(JSON.stringify(TETROMINOS[randomIndex])); // Deep copy
+      return JSON.parse(JSON.stringify(TETROMINOS[randomIndex]));
     }
 
     function drawBoard() {
@@ -142,7 +142,7 @@
         if (board[r].every(cell => cell !== null)) {
           board.splice(r, 1);
           board.unshift(Array(COLUMNS).fill(null));
-          r++; // recheck the row that moved down
+          r++; // Recheck the new row that dropped into place
         }
       }
     }

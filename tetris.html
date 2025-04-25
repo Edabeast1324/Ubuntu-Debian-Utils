@@ -68,6 +68,7 @@
       text-shadow: 0 0 5px #ffea00;
       font-weight: bold;
       text-align: center;
+      margin-top: 20px;
     }
 
     canvas {
@@ -93,9 +94,12 @@
       margin: 10px 0;
     }
 
+    /* New style for the next block canvas, positioning it outside the main canvas */
     #next-block-canvas {
-      border: 2px solid #ffea00;
-      margin-top: 10px;
+      position: absolute;
+      top: 20px; /* Move the next block canvas towards the top */
+      left: 340px; /* Move the next block canvas to the right of the main grid */
+      border: none; /* Remove the border outline */
     }
   </style>
 </head>
@@ -248,63 +252,4 @@
     }
 
     function updateNextBlockDisplay() {
-      drawNextTetromino();
-    }
-
-    function update() {
-      if (gameOver) return;
-
-      if (canMove(1, 0)) {
-        tetrominoPos.row++;
-      } else {
-        placeTetromino();
-        clearRows();
-        currentTetromino = nextTetromino;
-        nextTetromino = generateTetromino();
-        tetrominoPos = { row: 0, col: 3 };
-        if (!canMove(0, 0)) {
-          gameOver = true;
-          overlay.style.display = 'block';
-        }
-        updateNextBlockDisplay();
-      }
-
-      draw();
-    }
-
-    function draw() {
-      drawBoard();
-      drawTetromino();
-    }
-
-    function handleKey(e) {
-      if (gameOver && e.key.toLowerCase() === 'r') {
-        initializeGame();
-        return;
-      }
-
-      if (gameOver) return;
-
-      switch (e.key) {
-        case 'ArrowLeft':
-          if (canMove(0, -1)) tetrominoPos.col--;
-          break;
-        case 'ArrowRight':
-          if (canMove(0, 1)) tetrominoPos.col++;
-          break;
-        case 'ArrowDown':
-          if (canMove(1, 0)) tetrominoPos.row++;
-          break;
-        case 'ArrowUp':
-          rotateTetromino();
-          break;
-      }
-      draw();
-    }
-
-    document.addEventListener('keydown', handleKey);
-    setInterval(update, 500);
-    initializeGame();
-  </script>
-</body>
-</html>
+      drawNextTetrom

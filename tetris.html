@@ -212,4 +212,44 @@
           gameOver = true;
           overlay.style.display = 'block';
         }
-     
+      }
+
+      draw();
+    }
+
+    function draw() {
+      drawBoard();
+      drawTetromino();
+    }
+
+    function handleKey(e) {
+      if (gameOver && e.key.toLowerCase() === 'r') {
+        initializeGame();
+        return;
+      }
+
+      if (gameOver) return;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (canMove(0, -1)) tetrominoPos.col--;
+          break;
+        case 'ArrowRight':
+          if (canMove(0, 1)) tetrominoPos.col++;
+          break;
+        case 'ArrowDown':
+          if (canMove(1, 0)) tetrominoPos.row++;
+          break;
+        case 'ArrowUp':
+          rotateTetromino();
+          break;
+      }
+      draw();
+    }
+
+    document.addEventListener('keydown', handleKey);
+    setInterval(update, 500);
+    initializeGame();
+  </script>
+</body>
+</html>

@@ -224,5 +224,14 @@
           rotateTetromino();
           break;
       }
-      draw
+      draw();
+    }
+
+    document.addEventListener('keydown', handleKey);
+    setInterval(update, 500);
+    initializeGame();
+  </script>
+</body>
+</html>
+
 

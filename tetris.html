@@ -208,4 +208,8 @@
         clearRows();
         currentTetromino = generateTetromino();
         tetrominoPos = { row: 0, col: 3 };
-        if (!canMove
+        if (!canMove(0, 0)) {
+          gameOver = true;
+          overlay.style.display = 'block';
+        }
+     

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hellicopter Offline Games</title>
+    <link rel="icon" type="image/png" href="Favicons/yes.png" sizes="16x16" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #0f1a20, #050d12); /* Darker, more intense gradient */
+            color: #e0e0e0; /* Slightly lighter text */
+            line-height: 1.6;
+            min-height: 100vh; /* Ensure background covers full height */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 0 40px; /* More padding at top */
+            background-color: rgba(0, 0, 0, 0.5); /* More opaque header background */
+            margin-bottom: 40px;
+            border-bottom: 3px solid #5c8aff; /* Brighter accent border */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); /* Add shadow to header */
+        }
+
+        header h1 {
+            color: #5c8aff; /* Brighter accent color */
+            font-size: 3.5em; /* Larger heading */
+            margin: 0;
+            text-shadow: 0 0 15px #5c8aff, 0 0 10px rgba(0, 0, 0, 0.8); /* Add glow/shadow */
+            letter-spacing: 2px; /* Add spacing */
+        }
+
+        header p {
+            font-size: 1.3em;
+            color: #a0e6ff; /* Lighter accent color for tagline */
+            margin-top: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Removed h2 rule as it's no longer used for main section titles */
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Slightly wider minimum */
+            gap: 25px; /* More space between grid items */
+        }
+
+        .game-item {
+            background-color: #1a2c3b; /* Darker blue background */
+            border: 2px solid #5c8aff; /* Brighter border */
+            border-radius: 10px; /* More rounded corners */
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease; /* Smooth hover effects */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Initial shadow */
+        }
+
+        .game-item:hover {
+            transform: translateY(-8px) rotateZ(1deg); /* More pronounced lift and slight tilt */
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6), 0 0 20px #5c8aff; /* Stronger shadow and glow */
+            border-color: #a0e6ff; /* Change border color on hover */
+        }
+
+        .game-item a {
+            display: block;
+            text-decoration: none;
+            color: #e0e0e0; /* Light text color */
+            padding: 30px 20px; /* More padding */
+            text-align: center;
+            font-size: 1.3em; /* Larger font */
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .game-item a:hover {
+            color: #a0e6ff; /* Change text color on hover */
+            text-shadow: 0 0 8px rgba(160, 230, 255, 0.7); /* Subtle text glow */
+        }
+
+        /* --- Tabs Styling --- */
+        .tabs {
+            display: flex; /* Arrange buttons in a row */
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(160, 230, 255, 0.3);
+        }
+
+        .tab-button {
+            background-color: #1a2c3b; /* Dark background */
+            color: #a0e6ff; /* Accent color */
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px 5px 0 0; /* Rounded top corners */
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-right: 5px; /* Space between buttons */
+        }
+
+        .tab-button:hover {
+            background-color: #0d1a25; /* Darker on hover */
+            color: #5c8aff; /* Brighter accent on hover */
+        }
+
+        .tab-button.active {
+            background-color: #5c8aff; /* Active tab background */
+            color: #0d1a25; /* Dark text for contrast */
+            cursor: default; /* No click cursor on active tab */
+            border-bottom: 2px solid #5c8aff; /* Active tab highlight */
+            margin-bottom: -2px; /* Offset border to align with container border */
+        }
+
+        .tab-content {
+            display: none; /* Hide inactive content */
+            padding: 30px; /* Padding inside content area */
+            border: 2px solid #5c8aff; /* Border matching theme */
+            border-radius: 0 10px 10px 10px; /* Rounded corners, sharp top-left */
+            background-color: #1a2c3b; /* Dark background for content */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); /* Add shadow */
+        }
+
+        .tab-content.active {
+            display: block; /* Show active content */
+        }
+
+        /* Specific styling for the Beta content area */
+        #betas-content {
+             background: linear-gradient(45deg, #5c8aff, #a0e6ff); /* Gradient background for beta */
+             color: #0d1a25; /* Very dark text for contrast */
+             border-color: #a0e6ff; /* Border matching beta gradient end */
+             text-align: center; /* Center content in beta tab */
+        }
+
+         #betas-content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #1a2c3b; /* Darker text for paragraph */
+        }
+
+        /* Beta game link styling within the beta content */
+        #betas-content .beta-game-link {
+            display: inline-block;
+            background-color: #1a2c3b; /* Dark blue button background */
+            color: #a0e6ff; /* Lighter accent color for button text */
+            padding: 18px 35px; /* More padding */
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid #1a2c3b; /* Match border initially */
+        }
+
+        #betas-content .beta-game-link:hover {
+            background-color: #0d1a25; /* Darker on hover */
+            color: #5c8aff; /* Brighter accent color on hover */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(92, 138, 255, 0.7); /* Add glow on hover */
+            border-color: #5c8aff; /* Accent border on hover */
+        }
+        /* --- End Tabs Styling --- */
+
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px; /* More space above footer */
+            color: #888; /* Darker grey */
+            font-size: 0.9em;
+            border-top: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Hellicopter Offline Games</h1>
+        <p>Your gateway to thrilling offline adventures!</p>
+    </header>
+
+    <div class="container">
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="games">Games</button>
+            <button class="tab-button" data-tab="betas">Betas</button>
+        </div>
+
+        <div id="games-content" class="tab-content active">
+             <!-- Original game-grid goes here -->
+            <div class="game-grid">
+                <div class="game-item"><a href="pizza.html" target="pizza.html">Pizza Defense</a></div>
+                <div class="game-item"><a href="brick.html" target="brick.html">Brick Breaking Game</a></div>
+                <div class="game-item"><a href="merger.html" target="merger.html">Sword Merger</a></div>
+                <div class="game-item"><a href="factory.html" target="factory.html">Factory Game</a></div>
+                <div class="game-item"><a href="sweep.html" target="sweep.html">Minesweeper</a></div>
+                <div class="game-item"><a href="clicker.html" target="clicker.html">Nice Clicker</a></div>
+                <div class="game-item"><a href="cursor.html" target="cursor.html">Cursor Clicker</a></div>
+                <div class="game-item"><a href="Custom Crafter.html" target="Custom Crafter.html">Custom Crafting</a></div>
+            </div>
+        </div>
+
+        <div id="betas-content" class="tab-content">
+             <!-- Original beta section content goes here -->
+             <!-- Removed h2 "Try Our Latest Beta Game!" as the tab title serves this purpose -->
+            <p>Be among the first to experience the thrilling new adventure!</p>
+            <a href="cursor2.html" class="beta-game-link" target="cursor2.html">Play Beta Game: Cursor Clicker 2</a>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2025 Hellicopter Offline Games. <a href="https://sites.google.com/madisoncity.k12.al.us/hellicopter/home">official site :)</a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+
+                    // Remove active class from all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to the clicked button and target content
+                    document.getElementById(`${targetTab}-content`).classList.add('active');
+                    button.classList.add('active');
+                });
+            });
+
+            // Optional: Activate the first tab on page load
+            // This block was already present and correctly clicks the first button.
+            // I'll keep it, but removed the duplicate call from inside the loop.
+            if (tabButtons.length > 0) {
+                 tabButtons[0].click(); // Simulate click on the first button
+            }
+        });
+    </script>
+
+</body>
+</html>

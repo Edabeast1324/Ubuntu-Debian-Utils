@@ -5,31 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tetris</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
-      background: #111;
+      background: #1e1e2f;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: white;
-      font-family: Arial, sans-serif;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       flex-direction: column;
     }
+    #scoreboard {
+      margin-bottom: 10px;
+      font-size: 20px;
+      background: #282c34;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
     canvas {
-      border: 2px solid white;
-      background: black;
+      border: 4px solid #fff;
+      background: #121212;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
     }
     #overlay {
       position: absolute;
+      top: 40%;
       text-align: center;
       color: white;
-      font-size: 24px;
+      font-size: 28px;
       display: none;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
-    #scoreboard {
-      margin: 10px;
-      font-size: 18px;
+    #overlay p {
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -52,13 +68,13 @@
     const BLOCK_SIZE = 30;
 
     const TETROMINOS = [
-      { shape: [[1, 1, 1], [0, 1, 0]], color: 'cyan' },
-      { shape: [[1, 1], [1, 1]], color: 'yellow' },
-      { shape: [[1, 1, 0], [0, 1, 1]], color: 'green' },
-      { shape: [[0, 1, 1], [1, 1, 0]], color: 'red' },
-      { shape: [[1, 0, 0], [1, 1, 1]], color: 'blue' },
-      { shape: [[0, 0, 1], [1, 1, 1]], color: 'orange' },
-      { shape: [[1, 1, 1, 1]], color: 'purple' }
+      { shape: [[1, 1, 1], [0, 1, 0]], color: '#00ffff' },  // T
+      { shape: [[1, 1], [1, 1]], color: '#f9f900' },        // O
+      { shape: [[1, 1, 0], [0, 1, 1]], color: '#00ff00' },  // S
+      { shape: [[0, 1, 1], [1, 1, 0]], color: '#ff0000' },  // Z
+      { shape: [[1, 0, 0], [1, 1, 1]], color: '#0000ff' },  // L
+      { shape: [[0, 0, 1], [1, 1, 1]], color: '#ffa500' },  // J
+      { shape: [[1, 1, 1, 1]], color: '#8000ff' }           // I
     ];
 
     let board, currentTetromino, tetrominoPos, gameOver, score;
@@ -86,6 +102,7 @@
           if (board[r][c]) {
             ctx.fillStyle = board[r][c];
             ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            ctx.strokeStyle = '#222';
             ctx.strokeRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
@@ -99,6 +116,7 @@
           if (shape[r][c]) {
             ctx.fillStyle = color;
             ctx.fillRect((tetrominoPos.col + c) * BLOCK_SIZE, (tetrominoPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            ctx.strokeStyle = '#222';
             ctx.strokeRect((tetrominoPos.col + c) * BLOCK_SIZE, (tetrominoPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
@@ -152,11 +170,9 @@
           board.splice(r, 1);
           board.unshift(Array(COLUMNS).fill(null));
           linesCleared++;
-          r++; // Check the same row again after shifting
+          r++;
         }
       }
-
-      // Update score based on how many lines were cleared at once
       const points = [0, 100, 300, 500, 800];
       score += points[linesCleared];
       scoreDisplay.textContent = score;
@@ -208,12 +224,5 @@
           rotateTetromino();
           break;
       }
-      draw();
-    }
+      draw
 
-    document.addEventListener('keydown', handleKey);
-    setInterval(update, 500);
-    initializeGame();
-  </script>
-</body>
-</html>

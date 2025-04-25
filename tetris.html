@@ -53,6 +53,22 @@
       text-shadow: 0 0 5px #ff6347;
     }
 
+    #next-block {
+      margin-top: 10px;
+      font-size: 20px;
+      padding: 12px 25px;
+      border: 2px solid #ffea00;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 
+        0 0 10px #ffea00,
+        0 0 20px #ffea00,
+        inset 0 0 10px #ffea00;
+      color: #ffea00;
+      text-shadow: 0 0 5px #ffea00;
+      font-weight: bold;
+    }
+
     canvas {
       border: 4px solid #fff;
       background: #111;
@@ -80,6 +96,7 @@
 <body>
   <div id="scoreboard">Score: <span id="score">0</span></div>
   <div id="highscore">High Score: <span id="high-score">0</span></div>
+  <div id="next-block">Next: </div>
   <canvas id="tetris" width="300" height="600"></canvas>
   <div id="overlay">
     <p>🎮 Game Over</p>
@@ -92,6 +109,7 @@
     const overlay = document.getElementById('overlay');
     const scoreDisplay = document.getElementById('score');
     const highScoreDisplay = document.getElementById('high-score');
+    const nextBlockDisplay = document.getElementById('next-block');
 
     const ROWS = 20;
     const COLUMNS = 10;
@@ -107,17 +125,19 @@
       { shape: [[1, 1, 1, 1]], color: '#8000ff' }           // I
     ];
 
-    let board, currentTetromino, tetrominoPos, gameOver, score, highScore;
+    let board, currentTetromino, tetrominoPos, nextTetromino, gameOver, score, highScore;
 
     function initializeGame() {
       board = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(null));
       currentTetromino = generateTetromino();
+      nextTetromino = generateTetromino();
       tetrominoPos = { row: 0, col: 3 };
       gameOver = false;
       score = 0;
       scoreDisplay.textContent = score;
       overlay.style.display = 'none';
       draw();
+      updateNextBlockDisplay();
     }
 
     function generateTetromino() {
@@ -148,6 +168,22 @@
             ctx.fillRect((tetrominoPos.col + c) * BLOCK_SIZE, (tetrominoPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
             ctx.strokeStyle = '#222';
             ctx.strokeRect((tetrominoPos.col + c) * BLOCK_SIZE, (tetrominoPos.row + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          }
+        }
+      }
+    }
+
+    function drawNextTetromino() {
+      const { shape, color } = nextTetromino;
+      const startX = COLUMNS + 2;
+      const startY = 2;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c]) {
+            ctx.fillStyle = color;
+            ctx.fillRect((startX + c) * BLOCK_SIZE, (startY + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+            ctx.strokeStyle = '#222';
+            ctx.strokeRect((startX + c) * BLOCK_SIZE, (startY + r) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
       }
@@ -222,7 +258,8 @@
       } else {
         placeTetromino();
         clearRows();
-        currentTetromino = generateTetromino();
+        currentTetromino = nextTetromino;
+        nextTetromino = generateTetromino();
         tetrominoPos = { row: 0, col: 3 };
         if (!canMove(0, 0)) {
           gameOver = true;
@@ -231,6 +268,7 @@
       }
 
       draw();
+      drawNextTetromino();
     }
 
     function draw() {
@@ -271,9 +309,14 @@
       highScoreDisplay.textContent = highScore;
     }
 
-    setInterval(update, 500);
-    loadHighScore();
+    function updateNextBlockDisplay() {
+      const { shape, color } = nextTetromino;
+      nextBlockDisplay.innerHTML = `Next: <br><span style="color: ${color}; font-size: 18px;">&#x25A0;&#x25A0;&#x25A0;&#x25A0;</span>`;
+    }
+
     initializeGame();
+    loadHighScore();
+    setInterval(update, 500);
   </script>
 </body>
 </html>

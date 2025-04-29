@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Geometry Dash</title>
+  <style>
+    canvas {
+      background: #111;
+      display: block;
+      margin: 0 auto;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let gameSpeed = 4;
+    const gravity = 0.5;
+
+    // Player setup
+    const player = {
+      x: 50,
+      y: 300,
+      width: 30,
+      height: 30,
+      dy: 0,
+      jumpForce: -10,
+      grounded: false,
+      jump() {
+        if (this.grounded) {
+          this.dy = this.jumpForce;
+          this.grounded = false;
+        }
+      },
+      update() {
+        this.dy += gravity;
+        this.y += this.dy;
+
+        // Ground collision
+        if (this.y + this.height >= canvas.height - 50) {
+          this.y = canvas.height - 50 - this.height;
+          this.dy = 0;
+          this.grounded = true;
+        }
+
+        this.draw();
+      },
+      draw() {
+        ctx.fillStyle = "#0ff";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+      }
+    };
+
+    // Obstacle
+    class Obstacle {
+      constructor(x, width, height) {
+        this.x = x;
+        this.y = canvas.height - 50 - height;
+        this.width = width;
+        this.height = height;
+      }
+
+      update() {
+        this.x -= gameSpeed;
+        this.draw();
+      }
+
+      draw() {
+        ctx.fillStyle = "#f00";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+      }
+    }
+
+    const obstacles = [];
+    let spawnTimer = 0;
+    const spawnInterval = 90;
+
+    // Game loop
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Ground
+      ctx.fillStyle = "#444";
+      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+
+      player.update();
+
+      spawnTimer++;
+      if (spawnTimer >= spawnInterval) {
+        const height = 40 + Math.random() * 40;
+        obstacles.push(new Obstacle(canvas.width, 20, height));
+        spawnTimer = 0;
+      }
+
+      for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        obs.update();
+
+        // Collision detection
+        if (
+          player.x < obs.x + obs.width &&
+          player.x + player.width > obs.x &&
+          player.y < obs.y + obs.height &&
+          player.y + player.height > obs.y
+        ) {
+          alert("Game Over!");
+          document.location.reload();
+        }
+      }
+    }
+
+    animate();
+
+    // Controls
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space" || e.code === "ArrowUp") {
+        player.jump();
+      }
+    });
+  </script>
+</body>
+</html>

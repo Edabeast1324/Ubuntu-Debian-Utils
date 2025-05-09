@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/png" href="Favicons/Sudoku.png">
+  <title>Sudoku</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    #sudoku {
+      display: grid;
+      grid-template-columns: repeat(9, 40px);
+      grid-template-rows: repeat(9, 40px);
+      gap: 2px;
+      margin-top: 10px;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 20px;
+      border: 1px solid #ccc;
+    }
+    .fixed {
+      background: #eee;
+      font-weight: bold;
+    }
+    .conflict {
+      background-color: #f99 !important;
+    }
+    select, button {
+      margin: 10px;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sudoku</h1>
+  <label>
+    Difficulty:
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium" selected>Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+  </label>
+  <button onclick="generatePuzzle()">New Puzzle</button>
+  <button onclick="showSolution()">Show Answer</button>
+  <div id="sudoku"></div>
+
+  <script>
+    const grid = document.getElementById('sudoku');
+    let puzzle = [];
+    let solution = [];
+
+    const difficultyClues = {
+      easy: 40,
+      medium: 32,
+      hard: 26
+    };
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function isValid(board, r, c, n) {
+      for (let i = 0; i < 9; i++) {
+        if (board[r][i] === n || board[i][c] === n) return false;
+        const br = 3 * Math.floor(r / 3) + Math.floor(i / 3);
+        const bc = 3 * Math.floor(c / 3) + (i % 3);
+        if (board[br][bc] === n) return false;
+      }
+      return true;
+    }
+
+    function generateFullBoard() {
+      const board = Array.from({ length: 9 }, () => Array(9).fill(0));
+      fill(board);
+      return board;
+    }
+
+    function fill(board) {
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (board[r][c] === 0) {
+            const nums = shuffle([1,2,3,4,5,6,7,8,9]);
+            for (let n of nums) {
+              if (isValid(board, r, c, n)) {
+                board[r][c] = n;
+                if (fill(board)) return true;
+                board[r][c] = 0;
+              }
+            }
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function solve(board, count = { val: 0 }, stopAt = 2) {
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (board[r][c] === 0) {
+            for (let n = 1; n <= 9; n++) {
+              if (isValid(board, r, c, n)) {
+                board[r][c] = n;
+                solve(board, count, stopAt);
+                if (count.val >= stopAt) return;
+                board[r][c] = 0;
+              }
+            }
+            return;
+          }
+        }
+      }
+      count.val++;
+    }
+
+    function generatePuzzle() {
+      const level = document.getElementById('difficulty').value;
+      const clues = difficultyClues[level];
+      const full = generateFullBoard();
+      puzzle = full.map(row => row.slice());
+      solution = full.map(row => row.slice());
+
+      const cells = shuffle([...Array(81).keys()]);
+      let removed = 0;
+
+      for (let i = 0; i < 81 && removed < (81 - clues); i++) {
+        const idx = cells[i];
+        const r = Math.floor(idx / 9);
+        const c = idx % 9;
+        const backup = puzzle[r][c];
+        puzzle[r][c] = 0;
+
+        const clone = puzzle.map(row => row.slice());
+        const count = { val: 0 };
+        solve(clone, count, 2);
+        if (count.val === 1) {
+          removed++;
+        } else {
+          puzzle[r][c] = backup;
+        }
+      }
+
+      renderGrid(puzzle);
+    }
+
+    function renderGrid(board) {
+      grid.innerHTML = '';
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const input = document.createElement('input');
+          input.className = 'cell';
+          input.maxLength = 1;
+          input.dataset.row = r;
+          input.dataset.col = c;
+
+          if (board[r][c] !== 0) {
+            input.value = board[r][c];
+            input.disabled = true;
+            input.classList.add('fixed');
+          } else {
+            input.addEventListener('input', () => {
+              input.value = input.value.replace(/[^1-9]/g, '');
+              highlightConflicts();
+            });
+          }
+
+          grid.appendChild(input);
+        }
+      }
+    }
+
+    function highlightConflicts() {
+      const inputs = document.querySelectorAll('.cell');
+      const board = Array.from({ length: 9 }, () => Array(9).fill(0));
+
+      inputs.forEach(input => {
+        const r = parseInt(input.dataset.row);
+        const c = parseInt(input.dataset.col);
+        const val = parseInt(input.value);
+        board[r][c] = isNaN(val) ? 0 : val;
+      });
+
+      inputs.forEach(input => input.classList.remove('conflict'));
+
+      inputs.forEach(input => {
+        const r = parseInt(input.dataset.row);
+        const c = parseInt(input.dataset.col);
+        const val = parseInt(input.value);
+        if (!val || puzzle[r][c] !== 0) return;
+
+        for (let i = 0; i < 9; i++) {
+          if ((i !== c && board[r][i] === val) ||
+              (i !== r && board[i][c] === val)) {
+            input.classList.add('conflict');
+            return;
+          }
+        }
+
+        const boxStartRow = 3 * Math.floor(r / 3);
+        const boxStartCol = 3 * Math.floor(c / 3);
+        for (let i = boxStartRow; i < boxStartRow + 3; i++) {
+          for (let j = boxStartCol; j < boxStartCol + 3; j++) {
+            if ((i !== r || j !== c) && board[i][j] === val) {
+              input.classList.add('conflict');
+              return;
+            }
+          }
+        }
+      });
+    }
+
+    function showSolution() {
+      const inputs = document.querySelectorAll('.cell');
+      inputs.forEach(input => {
+        const r = parseInt(input.dataset.row);
+        const c = parseInt(input.dataset.col);
+        input.value = solution[r][c];
+        input.classList.remove('conflict');
+      });
+    }
+
+    generatePuzzle();
+  </script>
+</body>
+</html>

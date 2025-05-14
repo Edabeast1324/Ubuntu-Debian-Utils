@@ -3,93 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML Compiler Studio</title>
+    <title>Firebase Studio Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            display: flex;
+            min-height: 100vh;
         }
 
         .container {
             display: flex;
             width: 100%;
-            height: 100vh;
-            overflow: hidden;
+            height: 100%;
         }
 
+        /* Sidebar (File Explorer) */
         .file-explorer {
             width: 250px;
-            background-color: #2C3E50;
-            color: white;
+            background-color: #24292f;
+            color: #ffffff;
             padding: 10px;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            font-size: 14px;
+            border-right: 1px solid #2c313a;
         }
 
         .file-explorer h2 {
-            font-size: 18px;
             margin-top: 0;
+            font-size: 20px;
+            color: #ffffff;
         }
 
         .file-explorer ul {
             list-style: none;
             padding-left: 0;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         .file-explorer li {
             cursor: pointer;
-            padding: 5px;
-            margin: 5px 0;
-            background-color: #34495E;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background-color: #2c313a;
             border-radius: 5px;
+            font-size: 16px;
         }
 
         .file-explorer li:hover {
+            background-color: #1e2329;
+        }
+
+        .file-explorer li.selected {
             background-color: #1ABC9C;
         }
 
-        .editor {
+        .file-explorer button {
+            margin-top: 10px;
+            padding: 6px 10px;
+            font-size: 14px;
+            background-color: #1e2329;
+            color: #ffffff;
+            border: 1px solid #2c313a;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .file-explorer button:hover {
+            background-color: #1ABC9C;
+        }
+
+        /* Editor Section */
+        .editor-section {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            background-color: #fff;
         }
 
-        .editor h2 {
+        .editor-section h2 {
             font-size: 24px;
+            margin-top: 0;
         }
 
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 10px;
+            height: 300px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            background-color: #f5f5f5;
+            padding: 12px;
             font-family: monospace;
-            resize: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #45a049;
+            resize: none;
         }
 
         .preview {
@@ -97,101 +117,154 @@
             height: 500px;
             border: 1px solid #ddd;
             margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .bottom-bar {
+            padding: 10px;
+            text-align: right;
+            background-color: #2C3E50;
+            color: white;
+        }
+
+        .bottom-bar button {
+            background-color: #1ABC9C;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .bottom-bar button:hover {
+            background-color: #16a085;
+        }
+
+        /* Mobile support */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .file-explorer {
+                width: 100%;
+                height: 200px;
+            }
+
+            .editor-section {
+                height: calc(100vh - 200px);
+            }
+
+            .preview {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- File Explorer -->
+
+    <!-- Sidebar: File Explorer -->
     <div class="file-explorer">
         <h2>File Explorer</h2>
         <ul id="file-list">
-            <!-- Dynamic File List Will Appear Here -->
+            <!-- Files will be dynamically listed here -->
         </ul>
+        <button onclick="createFile()">+ Create File</button>
     </div>
 
     <!-- Editor Section -->
-    <div class="editor">
+    <div class="editor-section">
         <h2>Edit File</h2>
-
         <div id="editor-container">
-            <!-- Dynamically Injected Editors for HTML, CSS, JS -->
+            <!-- Editable text areas for HTML, CSS, and JS will be dynamically inserted here -->
         </div>
-
-        <button id="save-button" onclick="saveFile()">Save</button>
-
         <div class="preview" id="preview-frame"></div>
+
+        <div class="bottom-bar">
+            <button onclick="saveFile()">Save</button>
+        </div>
     </div>
+
 </div>
 
 <script>
-    // In-memory project files structure
-    let projectFiles = {
-        "index.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Sample Project</title></head><body><h1>Welcome to Firebase Studio Clone!</h1><script src='script.js'></script></body></html>",
+    // Initial project files structure
+    const projectFiles = {
+        "index.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Firebase Studio Clone</title></head><body><h1>Welcome to Firebase Studio Clone</h1><script src='script.js'></script></body></html>",
         "styles.css": "body { font-family: Arial, sans-serif; background-color: #f4f4f4; }",
         "script.js": "console.log('JavaScript Loaded!');",
-        "image.png": "image.png", // image reference, not content
     };
 
-    // Initially display the files in the file explorer
-    const fileList = document.getElementById("file-list");
+    // Keep track of the current file being edited
+    let currentFile = null;
 
+    // Function to update the file explorer
     function updateFileExplorer() {
+        const fileList = document.getElementById("file-list");
         fileList.innerHTML = '';
+
         Object.keys(projectFiles).forEach(fileName => {
-            let li = document.createElement("li");
+            const li = document.createElement("li");
             li.textContent = fileName;
             li.onclick = () => loadFile(fileName);
+            li.classList.toggle('selected', fileName === currentFile);
             fileList.appendChild(li);
         });
     }
 
-    // Load a selected file into the editor
+    // Function to load a file into the editor
     function loadFile(fileName) {
+        currentFile = fileName;
         const fileContent = projectFiles[fileName];
-        let editorContainer = document.getElementById("editor-container");
-        editorContainer.innerHTML = '';
+        const editorContainer = document.getElementById("editor-container");
 
+        editorContainer.innerHTML = '';
+        
         if (fileName.endsWith(".html")) {
-            // HTML File Editor
             const textarea = document.createElement("textarea");
             textarea.value = fileContent;
             textarea.id = "html-editor";
             editorContainer.appendChild(textarea);
         } else if (fileName.endsWith(".css")) {
-            // CSS File Editor
             const textarea = document.createElement("textarea");
             textarea.value = fileContent;
             textarea.id = "css-editor";
             editorContainer.appendChild(textarea);
         } else if (fileName.endsWith(".js")) {
-            // JS File Editor
             const textarea = document.createElement("textarea");
             textarea.value = fileContent;
             textarea.id = "js-editor";
             editorContainer.appendChild(textarea);
         }
 
-        // Update the preview as the user types
         updatePreview();
+        updateFileExplorer();
     }
 
-    // Save the content of the editor to the corresponding file
+    // Function to create a new file
+    function createFile() {
+        const fileName = prompt("Enter the name of the new file (e.g., newFile.html):");
+        if (fileName) {
+            projectFiles[fileName] = "";
+            currentFile = fileName;
+            updateFileExplorer();
+            loadFile(fileName);
+        }
+    }
+
+    // Function to save the file
     function saveFile() {
-        const htmlEditor = document.getElementById("html-editor");
-        const cssEditor = document.getElementById("css-editor");
-        const jsEditor = document.getElementById("js-editor");
-
-        if (htmlEditor) projectFiles["index.html"] = htmlEditor.value;
-        if (cssEditor) projectFiles["styles.css"] = cssEditor.value;
-        if (jsEditor) projectFiles["script.js"] = jsEditor.value;
-
-        alert("File saved successfully!");
-        updatePreview();
+        const editor = document.querySelector("textarea");
+        if (editor) {
+            projectFiles[currentFile] = editor.value;
+            alert("File saved successfully!");
+            updatePreview();
+        }
     }
 
-    // Update the preview window by compiling HTML, CSS, and JS
+    // Function to update the preview window
     function updatePreview() {
         const iframe = document.getElementById("preview-frame");
         const htmlContent = projectFiles["index.html"];
@@ -201,17 +274,14 @@
         let iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
         iframeDocument.open();
 
-        // Inject HTML content
         iframeDocument.write(htmlContent);
 
-        // Inject CSS if available
         if (cssContent) {
             const styleTag = iframeDocument.createElement("style");
             styleTag.innerHTML = cssContent;
             iframeDocument.head.appendChild(styleTag);
         }
 
-        // Inject JS if available
         if (jsContent) {
             const scriptTag = iframeDocument.createElement("script");
             scriptTag.innerHTML = jsContent;
@@ -221,7 +291,7 @@
         iframeDocument.close();
     }
 
-    // Initialize the app and load the file explorer
+    // Initialize the app
     updateFileExplorer();
 </script>
 

@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Sidebar (File Explorer) */
+.file-explorer {
+    width: 250px;
+    background-color: #24292f;
+    color: #ffffff;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-right: 1px solid #2c313a;
+}
+
+.file-explorer h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.file-explorer ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.file-explorer li {
+    cursor: pointer;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background-color: #2c313a;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.file-explorer li:hover {
+    background-color: #1e2329;
+}
+
+.file-explorer li.selected {
+    background-color: #1ABC9C;
+}
+
+.file-explorer button {
+    margin-top: 10px;
+    padding: 6px 10px;
+    font-size: 14px;
+    background-color: #1e2329;
+    color: #ffffff;
+    border: 1px solid #2c313a;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.file-explorer button:hover {
+    background-color: #1ABC9C;
+}
+
+/* Editor Section */
+.editor-section {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.editor-section h2 {
+    font-size: 24px;
+    margin-top: 0;
+}
+
+textarea {
+    width: 100%;
+    height: 300px;
+    font-size: 16px;
+    padding: 12px;
+    font-family: monospace;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    resize: none;
+}
+
+.preview {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+.bottom-bar {
+    padding: 10px;
+    text-align: right;
+    background-color: #2C3E50;
+    color: white;
+}
+
+.bottom-bar button {
+    background-color: #1ABC9C;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.bottom-bar button:hover {
+    background-color: #16a085;
+}
+
+/* Mobile support */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .file-explorer {
+        width: 100%;
+        height: 200px;
+    }
+
+    .editor-section {
+        height: calc(100vh - 200px);
+    }
+
+    .preview {
+        height: 300px;
+    }
+}

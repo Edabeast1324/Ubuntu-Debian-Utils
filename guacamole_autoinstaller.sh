@@ -14,20 +14,20 @@ elif [[ "$choice" == 2 ]]; then
     echo "Updating System"
     (sudo apt update && sudo apt upgrade -y)
     echo "System up to date"
-    sleep(2)
+    sleep 2
     clear
     echo "Installing Docker"
     (curl -fsSL https://get.docker.com -o get-docker.sh)
     (sudo sh get-docker.sh)
     (sudo usermod -aG docker $USER)
     echo "Docker is installed"
-    sleep(2)
+    sleep 2
     clear
     echo "Installing Docker-Compose"
     (sudo apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip)
     (sudo apt install -y python3 docker-compose)
     echo "Docker-Compose is installed"
-    sleep(2)
+    sleep 2
     clear
     echo "Creating Docker Compose File"
     (mkdir -p ~/guacamole && cd ~/guacamole)
@@ -71,7 +71,7 @@ services:
 EOF
 
     echo "File created"
-    sleep(2)
+    sleep 2
     clear
     echo "Creating containers and pulling files"
     (cd ~/guacamole && docker-compose up -d)

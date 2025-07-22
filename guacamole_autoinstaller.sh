@@ -7,21 +7,21 @@ read -p "Choose an option: " choice
 
 if [[ "$choice" == 1 ]]; then
     echo "Updating System"
-    (sudo apt update && sudo apt upgrade -y) > ~/guacamole_autoinstaller.log
+    (sudo apt update && sudo apt upgrade -y)
 
 elif [[ "$choice" == 2 ]]; then
     echo "Updating System"
-    (sudo apt update && sudo apt upgrade -y) > ~/guacamole_autoinstaller.log
+    (sudo apt update && sudo apt upgrade -y)
     echo "System up to date"
     echo "Installing Docker"
-    (curl -fsSL https://get.docker.com -o get-docker.sh) > ~/guacamole_autoinstaller.log
-    (sudo sh get-docker.sh) >> ~/guacamole_autoinstaller.log
-    (sudo usermod -aG docker $USER) >> ~/guacamole_autoinstaller.log
+    (curl -fsSL https://get.docker.com -o get-docker.sh)
+    (sudo sh get-docker.sh)
+    (sudo usermod -aG docker $USER)
     echo "Docker is installed"
 
     echo "Installing Docker-Compose"
-    (sudo apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip) >> ~/guacamole_autoinstaller.log
-    (sudo apt install -y python3 docker-compose) >> ~/guacamole_autoinstaller.log
+    (sudo apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip)
+    (sudo apt install -y python3 docker-compose)
     echo "Docker-Compose is installed"
 
     echo "Creating Docker Compose File"
@@ -67,6 +67,6 @@ EOF
 
     echo "File created"
     echo "Creating containers and pulling files"
-    (cd ~/guacamole && docker-compose up -d) >> ~/guacamole_autoinstaller.log
+    (cd ~/guacamole && docker-compose up -d)
     echo "Fully installed!"
 fi

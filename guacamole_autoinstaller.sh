@@ -8,11 +8,79 @@ read -p "Choose an option: " choice
 if [[ "$choice" == 1 ]]; then
     echo "Updating System"
     (sudo apt update && sudo apt upgrade -y)
+    clear
+    echo "System Up to date"
+    sleep 2
+    clear
+    echo "Installing Docker"
+    (curl -fsSL https://get.docker.com -o get-docker.sh)
+    (sudo sh get-docker.sh)
+    (sudo usermod -aG docker $USER)
+    clear
+    echo "Docker is installed"
+    sleep 2
+    clear
+    echo "Installing Docker-Compose"
+    (sudo apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip)
+    (sudo apt install -y python3 docker-compose)
+    clear
+    echo "Docker-Compose is installed"
+    sleep 2
+    clear
+    echo "Creating Docker Compose File"
+    (mkdir -p ~/guacamole && cd ~/guacamole)
+
+    cat << EOF > ~/guacamole/docker-compose.yml
+version: '3'
+services:
+  guacd:
+    image: guacamole/guacd
+    restart: always
+
+  guacamole:
+    image: oznu/guacamole
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=guacamole_db
+      - MYSQL_USER=guacamole_user
+      - MYSQL_PASSWORD=guac_pass
+      - GUACAMOLE_HOME=/config
+    depends_on:
+      - mysql
+    volumes:
+      - ./guac-home:/config
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_pass
+      - MYSQL_DATABASE=guacamole_db
+      - MYSQL_USER=guacamole_user
+      - MYSQL_PASSWORD=guac_pass
+    volumes:
+      - ./mysql:/var/lib/mysql
+EOF
+
+    echo "File created"
+    sleep 2
+    clear
+    echo "Creating containers and pulling files"
+    (cd ~/guacamole && docker-compose up -d)
+    clear
+    echo "Fully installed!"
+    echo "Go to: <your device's ip>:8080 to acess"
+fi
 
 elif [[ "$choice" == 2 ]]; then
     clear
     echo "Updating System"
     (sudo apt update && sudo apt upgrade -y)
+    clear
     echo "System up to date"
     sleep 2
     clear
@@ -20,12 +88,14 @@ elif [[ "$choice" == 2 ]]; then
     (curl -fsSL https://get.docker.com -o get-docker.sh)
     (sudo sh get-docker.sh)
     (sudo usermod -aG docker $USER)
+    clear
     echo "Docker is installed"
     sleep 2
     clear
     echo "Installing Docker-Compose"
     (sudo apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip)
     (sudo apt install -y python3 docker-compose)
+    clear
     echo "Docker-Compose is installed"
     sleep 2
     clear
@@ -75,7 +145,7 @@ EOF
     clear
     echo "Creating containers and pulling files"
     (cd ~/guacamole && docker-compose up -d)
+    clear
     echo "Fully installed!"
     echo "Go to: <your device's ip>:8080 to acess"
-    clear
 fi

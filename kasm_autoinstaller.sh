@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "Welcome to tha Kasm autoinstaller!
+echo "Welcome to tha Kasm autoinstaller!"
 echo "1) Install for AMD64"
 echo "2) Install for ARM64"
 read -p "Choose an option: " choice

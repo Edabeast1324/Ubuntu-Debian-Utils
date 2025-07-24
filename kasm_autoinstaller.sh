@@ -28,7 +28,6 @@ if [[ "$choice" == "1" ]]; then
     cd kasm_release
     sudo bash install.sh
 
-    clear
     echo "Successfully Installed"
     echo "Go to http://<your-ip-address> to access, or http://localhost on this device"
 

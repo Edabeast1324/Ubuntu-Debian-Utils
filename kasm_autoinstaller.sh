@@ -29,5 +29,8 @@ clear
 tar -xf kasm_release_1.14.0.01f0e.tar.gz
 cd kasm_release
 sudo bash install.sh
+clear
+echo "Successfully Installed"
+echo "Go to http://<your-ip-address> to access, or go to http://localhost on the same device"
 
 elif [[ "$choice" == 2 ]]; then

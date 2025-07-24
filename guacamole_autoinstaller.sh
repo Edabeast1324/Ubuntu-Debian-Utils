@@ -166,3 +166,5 @@ EOF
     clear
     echo "Fully installed!"
     echo "Go to: <your device's ip>:8080 to acess"
+
+fi

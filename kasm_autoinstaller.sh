@@ -3,6 +3,7 @@ clear
 echo "Welcome to tha Kasm autoinstaller!
 echo "1) Install for AMD64"
 echo "2) Install for ARM64"
+echo "3) Uninstall Kasm"
 read -p "Choose an option: " choice
 
 if [[ "$choice" == 1 ]]; then
@@ -31,3 +32,12 @@ cd kasm_release
 sudo bash install.sh
 
 elif [[ "$choice" == 2 ]]; then
+
+elif [[ "$choice" == 3 ]]; then
+echo "Uninstalling Kasm"
+sleep 2
+clear
+cd kasm_release
+sudo bash uninstall.sh
+clear
+echo "Kasm Uninstalled"

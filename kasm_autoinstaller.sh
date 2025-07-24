@@ -38,3 +38,6 @@ elif [[ "$choice" == "2" ]]; then
     echo "https://www.kasmweb.com/downloads.html"
 else
     echo "Invalid choice"
+    exit 1
+
+fi

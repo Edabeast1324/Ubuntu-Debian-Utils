@@ -37,6 +37,4 @@ elif [[ "$choice" == "2" ]]; then
     echo "Please download and install the ARM64 version manually from:"
     echo "https://www.kasmweb.com/downloads.html"
 else
-    echo "Invalid choice. Exiting."
-    exit 1
-
+    echo "Invalid choice"

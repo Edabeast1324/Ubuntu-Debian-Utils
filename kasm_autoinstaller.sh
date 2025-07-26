@@ -53,8 +53,8 @@ elif [[ "$choice" == "2" ]]; then
     cd kasm_release
     sudo bash install.sh
     clear
-    sudo bash install.sh
-    echo "Successfully Installed"
+    echo "If the script ended with a subprocess error, run this script again. That always happens to me on ARM."
+    echo "Install script finished"
     echo "Go to http://<your-ip-address> to access, or http://localhost on this device"
     
 else

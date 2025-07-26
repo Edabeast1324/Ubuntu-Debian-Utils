@@ -52,7 +52,6 @@ elif [[ "$choice" == "2" ]]; then
     tar -xf kasm_release_1.17.0.7f020d.tar.gz
     cd kasm_release
     sudo bash install.sh
-    clear
     echo "If the script ended with a subprocess error, run this script again. That always happens to me on ARM."
     echo "Install script finished"
     echo "Go to http://<your-ip-address> to access, or http://localhost on this device"

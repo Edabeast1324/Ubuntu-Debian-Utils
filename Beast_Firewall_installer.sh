@@ -15,7 +15,7 @@ clear
 echo "Fetching Latest Firewall Update"
 sleep 2
 clear
-wget -O raw.githubusercontent.com/Edabeast1324/Ubuntu-Debian-Utils/refs/heads/main/Firewall-Releases/Latest.sh
+wget -O "Firewall.sh" "raw.githubusercontent.com/Edabeast1324/Ubuntu-Debian-Utils/refs/heads/main/Firewall-Releases/Latest.sh"
 status=$?
 if [ $status -ne 0 ]; then
     case $status in

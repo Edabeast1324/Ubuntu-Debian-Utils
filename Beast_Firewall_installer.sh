@@ -15,7 +15,7 @@ clear
 echo "Fetching Latest Firewall Update"
 sleep 2
 clear
-wget -O "bfw" "https://raw.githubusercontent.com/Edabeast1324/Ubuntu-Debian-Utils/main/Firewall-Releases/Latest.sh"
+wget -O "bfw" "https://raw.githubusercontent.com/Edabeast1324/Ubuntu-Debian-Utils/main/Latest-Firewall.sh"
 chmod +x bwf
 sudo mv bwf /usr/local/bin/
 sleep 2

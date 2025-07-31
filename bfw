@@ -1,3 +1,5 @@
+#!/bin/bash
+
 case "$1" in
   allow)
     case "$2" in
@@ -9,16 +11,18 @@ case "$1" in
         echo "All Ports Allowed"
         ;;
       *)
-        echo "Unknown 'allow' argument: $2"
+        echo "Allowing TCP port $2..."
+        sudo iptables -A INPUT -p tcp --dport "$2" -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --sport "$2" -j ACCEPT
         ;;
     esac
     ;;
-  
+
   block)
     case "$2" in
       all)
         if [ "$3" == "-A" ]; then
-          echo "Blocking ALL ports including internet (HTTP/HTTPS/DNS) and loopback"
+          echo "Blocking ALL ports including internet and loopback"
           sudo iptables -F
           sudo iptables -X
           sudo iptables -P INPUT DROP
@@ -32,25 +36,39 @@ case "$1" in
           sudo iptables -P INPUT DROP
           sudo iptables -P FORWARD DROP
           sudo iptables -P OUTPUT DROP
+
+          # Allow loopback and established connections
           sudo iptables -A INPUT -i lo -j ACCEPT
           sudo iptables -A OUTPUT -o lo -j ACCEPT
           sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+          # Allow DNS, HTTP, HTTPS
           sudo iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
           sudo iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
           sudo iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+
           echo "Blocked all ports except internet access and loopback."
         fi
         ;;
       *)
-        echo "Unknown 'block' argument: $2"
+        echo "Blocking TCP port $2..."
+        sudo iptables -A INPUT -p tcp --dport "$2" -j DROP
+        sudo iptables -A OUTPUT -p tcp --sport "$2" -j DROP
         ;;
     esac
     ;;
-  
-  *)
+
+  help)
+    echo "bfw - simple firewall control"
     echo "Usage:"
-    echo "  $0 allow all"
-    echo "  $0 block all"
-    echo "  $0 block all -A   # Block absolutely everything"
+    echo "  bfw allow all            # Allow all ports"
+    echo "  bfw allow <port>         # Allow a specific TCP port"
+    echo "  bfw block all            # Block all ports except internet"
+    echo "  bfw block all -A         # Block ALL ports including internet/loopback"
+    echo "  bfw block <port>         # Block a specific TCP port"
+    ;;
+
+  *)
+    echo "Command not found. Run 'bfw help' for a list of commands."
     ;;
 esac

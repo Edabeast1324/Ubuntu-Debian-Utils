@@ -1,15 +1,11 @@
-#!/bin/bash
-
 case "$1" in
   allow)
     case "$2" in
       all)
         echo "Allowing All Ports"
-        
         sudo iptables -P INPUT ACCEPT
         sudo iptables -P FORWARD ACCEPT
         sudo iptables -P OUTPUT ACCEPT
-
         echo "All Ports Allowed"
         ;;
       *)
@@ -17,14 +13,44 @@ case "$1" in
         ;;
     esac
     ;;
+  
   block)
     case "$2" in
       all)
-        echo "Blocking All Ports"
-
-        sudo iptables -P INPUT DROP
-        sudo iptables -P FORWARD DROP
-        sudo iptables -P OUTPUT DROP
-
-        echo "All Ports Blocked"
+        if [ "$3" == "-A" ]; then
+          echo "Blocking ALL ports including internet (HTTP/HTTPS/DNS) and loopback"
+          sudo iptables -F
+          sudo iptables -X
+          sudo iptables -P INPUT DROP
+          sudo iptables -P FORWARD DROP
+          sudo iptables -P OUTPUT DROP
+          echo "All ports blocked completely."
+        else
+          echo "Blocking All Ports (except internet and loopback)"
+          sudo iptables -F
+          sudo iptables -X
+          sudo iptables -P INPUT DROP
+          sudo iptables -P FORWARD DROP
+          sudo iptables -P OUTPUT DROP
+          sudo iptables -A INPUT -i lo -j ACCEPT
+          sudo iptables -A OUTPUT -o lo -j ACCEPT
+          sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+          sudo iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+          sudo iptables -A OUTPUT -p tcp --dport 80 -j ACCEPT
+          sudo iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+          echo "Blocked all ports except internet access and loopback."
+        fi
+        ;;
+      *)
+        echo "Unknown 'block' argument: $2"
+        ;;
+    esac
+    ;;
+  
+  *)
+    echo "Usage:"
+    echo "  $0 allow all"
+    echo "  $0 block all"
+    echo "  $0 block all -A   # Block absolutely everything"
+    ;;
 esac

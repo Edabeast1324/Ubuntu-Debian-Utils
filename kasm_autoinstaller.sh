@@ -4,6 +4,7 @@ clear
 echo "Welcome to the Kasm autoinstaller!"
 echo "1) Install for AMD64"
 echo "2) Install for ARM64"
+echo "3) Uninstall kasm"
 read -p "Choose an option: " choice
 
 if [[ "$choice" == "1" ]]; then
@@ -55,9 +56,34 @@ elif [[ "$choice" == "2" ]]; then
     echo "If the script ended with a subprocess error, run this script again. That always happens to me on ARM."
     echo "Install script finished"
     echo "Go to http://<your-ip-address> to access, or http://localhost on this device"
-    
+
+elif [[ "$choice" == "3" ]]; then
+    sudo /opt/kasm/current/bin/stop
+    sudo docker rm -f $(sudo docker container ls -qa --filter="label=kasm.kasmid")
+    export KASM_UID=$(id kasm -u)
+    export KASM_GID=$(id kasm -g)
+    sudo -E docker compose -f /opt/kasm/current/docker/docker-compose.yaml rm
+    sudo docker network rm kasm_default_network
+    plugin_name=$(sudo docker network inspect kasm_sidecar_network --format '{{.Driver}}')
+    sudo docker network rm kasm_sidecar_network
+    sudo docker plugin disable $plugin_name
+    sudo docker plugin rm $plugin_name
+    sudo rm -rf /var/log/kasm-sidecar
+    sudo rm -rf /var/run/kasm-sidecar
+    sudo docker volume rm kasm_db_1.17.0
+    sudo docker rmi redis:5-alpine
+    sudo docker rmi postgres:14-alpine
+    sudo docker rmi kasmweb/nginx:latest
+    sudo docker rmi kasmweb/share:1.17.0
+    sudo docker rmi kasmweb/agent:1.17.0
+    sudo docker rmi kasmweb/manager:1.17.0
+    sudo docker rmi kasmweb/api:1.17.0
+    sudo docker rmi $(sudo docker images --filter "label=com.kasmweb.image=true" -q)
+    sudo rm -rf /opt/kasm/
+    sudo deluser kasm_db
+    sudo deluser kasm
 else
-    echo "Invalid choice"
+    echo "Invalid choice. Exiting"
     exit 1
 
 fi
